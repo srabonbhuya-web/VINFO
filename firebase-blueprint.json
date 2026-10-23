@@ -1,0 +1,47 @@
+{
+  "entities": {
+    "DailyReportRecord": {
+      "title": "DailyReportRecord",
+      "description": "Daily vehicle load and unload report submitted from depot",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "date": { "type": "string", "maxLength": 32 },
+        "displayDate": { "type": "string", "maxLength": 32 },
+        "time": { "type": "string", "maxLength": 32 },
+        "reportType": { "type": "string", "enum": ["Load", "Unload", "Load/Unload"], "maxLength": 16 },
+        "vehicles": { "type": "array", "description": "List of vehicle license numbers" },
+        "vehicleCount": { "type": "number" },
+        "staffId": { "type": "string", "maxLength": 64 },
+        "staffName": { "type": "string", "maxLength": 128 },
+        "staffPhone": { "type": "string", "maxLength": 32 },
+        "reportText": { "type": "string", "maxLength": 2048 },
+        "createdAt": { "type": "number" },
+        "notes": { "type": "string", "maxLength": 512 }
+      },
+      "required": ["date", "reportType", "vehicles", "vehicleCount", "staffId", "staffName", "staffPhone", "reportText", "createdAt"]
+    },
+    "StaffMember": {
+      "title": "StaffMember",
+      "description": "Shipping or store staff member record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "name": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 128 },
+        "phone": { "type": "string", "maxLength": 32 }
+      },
+      "required": ["id", "name", "title", "phone"]
+    }
+  },
+  "firestore": {
+    "/records/{recordId}": {
+      "schema": "DailyReportRecord",
+      "description": "Collection storing all daily vehicle load and unload reports"
+    },
+    "/staff/{staffId}": {
+      "schema": "StaffMember",
+      "description": "Collection storing depot staff members for the report form dropdown"
+    }
+  }
+}

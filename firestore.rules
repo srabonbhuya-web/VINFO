@@ -1,0 +1,70 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isBootstrappedAdmin() {
+      return isSignedIn() && request.auth.token.email == '16531mis@gmail.com';
+    }
+
+    function isValidDailyReport(data) {
+      return data.keys().hasAll(['date', 'reportType', 'vehicles', 'vehicleCount', 'staffId', 'staffName', 'staffPhone', 'reportText', 'createdAt'])
+        && data.keys().hasOnly(['id', 'date', 'displayDate', 'time', 'reportType', 'vehicles', 'vehicleCount', 'staffId', 'staffName', 'staffPhone', 'reportText', 'createdAt', 'notes'])
+        && data.date is string && data.date.size() <= 32
+        && (data.reportType == 'Load' || data.reportType == 'Unload' || data.reportType == 'Load/Unload')
+        && data.vehicles is list && data.vehicles.size() <= 100
+        && (data.vehicles.size() == 0 || data.vehicles[0] is string)
+        && data.vehicleCount is number
+        && data.staffId is string && data.staffId.size() <= 64
+        && data.staffName is string && data.staffName.size() <= 128
+        && data.staffPhone is string && data.staffPhone.size() <= 32
+        && data.reportText is string && data.reportText.size() <= 4096
+        && data.createdAt is number;
+    }
+
+    function isValidStaff(data) {
+      return data.keys().hasAll(['id', 'name', 'title', 'phone'])
+        && data.keys().hasOnly(['id', 'name', 'title', 'phone', 'updatedAt'])
+        && data.id is string && data.id.size() <= 64
+        && data.name is string && data.name.size() <= 128
+        && data.title is string && data.title.size() <= 128
+        && data.phone is string && data.phone.size() <= 32;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    match /test/{docId} {
+      allow get: if true;
+    }
+
+    match /records/{recordId} {
+      allow get, list: if true;
+      allow create: if isValidId(recordId) && isValidDailyReport(incoming());
+      allow update: if false;
+      allow delete: if true;
+    }
+
+    match /staff/{staffId} {
+      allow get, list: if true;
+      allow create, update: if isValidId(staffId) && isValidStaff(incoming());
+      allow delete: if true;
+    }
+  }
+}
