@@ -905,8 +905,18 @@ ${totalSummaryLine}
           </div>
 
           {/* Bottom footer */}
-          <div className="pt-2 border-t border-gray-850/80 text-center text-[11px] text-gray-500">
+          <div className="pt-2 border-t border-gray-850/80 flex items-center justify-between text-[11px] text-gray-500">
             <span>RFL Distribution • Khulna Depot - 16531</span>
+            <a
+              href="https://github.com/srabonbhuya-web/VINFO"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-400 hover:text-indigo-400 flex items-center gap-1 transition-colors"
+              title="srabonbhuya-web/VINFO Repository"
+            >
+              <i className="fa-brands fa-github text-xs"></i>
+              <span>VINFO.APK</span>
+            </a>
           </div>
 
         </div>
